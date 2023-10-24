@@ -7,6 +7,7 @@ function App() {
     const [soDong, setSoDong] = useState<string>()
     const [soCot, setSoCot] = useState<string>()
     const [check, setCheck] = useState<boolean>(false)
+    const [checkNotFound, setCheckNotFound] = useState<boolean>(false)
     const [run, setRun] = useState<boolean>(false)
     const [soDongMatrix, setSoDongMatrix] = useState<number>(0)
     const [soCotMatrix, setSoCotMatrix] = useState<number>(0)
@@ -72,7 +73,7 @@ function App() {
             return
         }
         tmp3.push({ x: x, y: y })
-        await sleep(1500)
+        await sleep(800)
 
         if (checkTmp === true) return
         if (tmp1[x][y] === 4) {
@@ -126,6 +127,8 @@ function App() {
         await dfs(0, 0)
         if (checkTmp === false) {
             alert('Không tìm thấy đường đi')
+            setMangDuongDaDi(tmp1)
+            setCheckNotFound(true)
             return
         }
         setCheck(true)
@@ -251,7 +254,7 @@ function App() {
                         title='Mảng đường DFS di chuyển'
                     />
                 )}
-                {soCotMatrix !== 0 && soDongMatrix !== 0 && check && (
+                {soCotMatrix !== 0 && soDongMatrix !== 0 && (check || checkNotFound) && (
                     <Matrix
                         rows={soDongMatrix}
                         columns={soCotMatrix}
