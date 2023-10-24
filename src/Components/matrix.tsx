@@ -23,7 +23,7 @@ const Matrix = ({ rows, columns, matrix, setMangBanDau, title }: Props) => {
                     </div>
                 )
             })}
-            <p className='text-center text-xl font-bold py-2'>{title}</p>
+            <p className={`text-xl font-bold py-2  text-center`}>{title}</p>
         </div>
     )
 }
