@@ -12,6 +12,8 @@ function App() {
     const [mangBanDau, setMangBanDau] = useState<number[][]>([])
     const [mangDuongDaDi, setMangDuongDaDi] = useState<number[][]>([])
     const [mangKetQua, setMangKetQua] = useState<number[][]>([])
+    const [mangThucThi, setMangThucThi] = useState<number[][]>([])
+    const [mangDuongDi, setMangDuongDi] = useState<{ x: number; y: number }[]>([])
     const p = [
         [-1, 0],
         [0, -1],
@@ -20,6 +22,7 @@ function App() {
     ]
     let tmp1: number[][] = []
     let tmp2: number[][] = []
+    let tmp3: { x: number; y: number }[] = []
     let checkTmp: boolean = false
 
     // Function
@@ -63,13 +66,18 @@ function App() {
     function sleep(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms))
     }
-    function dfs(x: number, y: number) {
-        console.log(checkTmp)
+    async function dfs(x: number, y: number) {
+        tmp3.push({ x: x, y: y })
+        await sleep(1000)
+        setMangThucThi((prev) => {
+            console.log(x, y)
+            let tmp = JSON.parse(JSON.stringify(prev))
+            tmp[x][y] = 5
+            return tmp
+        })
         if (checkTmp === true) return
         if (tmp1[x][y] === 4) {
             alert('Tìm thấy đường đi')
-            tmp1[x][y] = 5
-            tmp2[x][y] = 5
             checkTmp = true
             return
         }
@@ -83,28 +91,38 @@ function App() {
             const y1 = y + p[i][1]
             if (x1 < 0 || y1 < 0 || x1 >= soCotMatrix || y1 >= soDongMatrix) continue
             if (tmp1[x1][y1] !== 5 && mangBanDau[x1][y1] !== 0 && mangBanDau[x1][y1] !== 3 && !checkTmp) {
-                console.log(x1, y1)
-                dfs(x1, y1)
+                // console.log(x1, y1)
+
+                await dfs(x1, y1)
             }
         }
         if (!checkTmp && tmp1[x][y] !== 3) {
             tmp2[x][y] = 1
+            tmp3.pop()
+            setMangThucThi((prev) => {
+                console.log(x, y)
+                let tmp = JSON.parse(JSON.stringify(prev))
+                tmp[x][y] = 1
+                return tmp
+            })
         }
     }
 
-    const DFS = () => {
+    const DFS = async () => {
         setRun(true)
         // Sao chép mảng mangDuongDaDi vào tmp1
         tmp1 = JSON.parse(JSON.stringify(mangDuongDaDi))
         // Sao chép mảng mangKetQua vào tmp2
         tmp2 = JSON.parse(JSON.stringify(mangKetQua))
-        dfs(0, 0)
+        await dfs(0, 0)
         if (checkTmp === false) {
             alert('Không tìm thấy đường đi')
+            return
         }
         setCheck(true)
         setMangDuongDaDi(tmp1)
         setMangKetQua(tmp2)
+        setMangDuongDi(JSON.parse(JSON.stringify(tmp3)))
     }
 
     useEffect(() => {
@@ -114,12 +132,13 @@ function App() {
         let tmp3 = mangBanDau
         setMangDuongDaDi(tmp3)
         setMangKetQua(tmp3)
+        setMangThucThi(tmp3)
     }, [mangBanDau])
 
     return (
         <div className='bg-[#085f63] w-full min-h-screen p-10'>
             <h1 className='text-4xl font-bold text-center py-5'>Tìm đường đi trong mê cung bằng thuật toán DFS</h1>
-            <form onSubmit={onSubmit} className='flex items-end gap-10'>
+            <form onSubmit={onSubmit} className='flex items-end gap-10 justify-center'>
                 <label>
                     <p className='text-2xl mb-3 font-bold'>Nhập số dòng &lt;= 20: </p>
                     <input
@@ -157,7 +176,7 @@ function App() {
                     DFS
                 </button>
             </form>
-            <div className='flex items-center flex-wrap gap-5'>
+            <div className='flex items-center flex-wrap gap-5 justify-center'>
                 {soCotMatrix !== 0 && soDongMatrix !== 0 && (
                     <Matrix
                         rows={soDongMatrix}
@@ -165,6 +184,15 @@ function App() {
                         matrix={mangBanDau}
                         setMangBanDau={setMangBanDau}
                         title='Mảng ban đầu'
+                    />
+                )}
+                {soCotMatrix !== 0 && soDongMatrix !== 0 && run && (
+                    <Matrix
+                        rows={soDongMatrix}
+                        columns={soCotMatrix}
+                        matrix={mangThucThi}
+                        setMangBanDau={setMangDuongDaDi}
+                        title='Mảng đường DFS đang di chuyển'
                     />
                 )}
                 {soCotMatrix !== 0 && soDongMatrix !== 0 && run && (
@@ -184,6 +212,18 @@ function App() {
                         setMangBanDau={setMangKetQua}
                         title='Mảng kết quả'
                     />
+                )}
+            </div>
+            <div className='max-w-xl mx-auto'>
+                {check && (
+                    <div className='grid grid-cols-4'>
+                        Đường đi: <br />
+                        {mangDuongDi.map((item, index) => (
+                            <span key={index}>
+                                Ô:({item.x + 1}, {item.y + 1}){index !== mangDuongDi.length - 1 && ' -> '}
+                            </span>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>
