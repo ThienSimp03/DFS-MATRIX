@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Matrix from './Components/matrix'
+import Cell from './Components/cell'
 
 function App() {
     // State
@@ -48,8 +49,8 @@ function App() {
             alert('Số dòng và số cột phải là số')
             return
         }
-        if (Number(soDong) > 20 || Number(soCot) > 20) {
-            alert('Số dòng phải <= 20 và số cột phải <= 20')
+        if (Number(soDong) > 20 || Number(soCot) > 20 || (Number(soDong) <= 3 && Number(soCot) <= 3)) {
+            alert('Số dòng phải <= 20 và số cột phải <= 20 và phải lớn hơn = 3')
             return
         }
         setSoDongMatrix(Number(soDong))
@@ -70,24 +71,28 @@ function App() {
         if (x < 0 || y < 0 || x >= soDongMatrix || y >= soCotMatrix) {
             return
         }
-
         tmp3.push({ x: x, y: y })
         await sleep(1500)
-        setMangThucThi((prev) => {
-            let tmp = JSON.parse(JSON.stringify(prev))
-            tmp[x][y] = 5
-            return tmp
-        })
 
         if (checkTmp === true) return
         if (tmp1[x][y] === 4) {
             alert('Tìm thấy đường đi')
+            setMangThucThi((prev) => {
+                let tmp = JSON.parse(JSON.stringify(prev))
+                tmp[x][y] = 5
+                return tmp
+            })
             checkTmp = true
             return
         }
         if (tmp1[x][y] !== 3) {
             tmp1[x][y] = 5
             tmp2[x][y] = 5
+            setMangThucThi((prev) => {
+                let tmp = JSON.parse(JSON.stringify(prev))
+                tmp[x][y] = 5
+                return tmp
+            })
         }
 
         for (let i = 0; i < 4; i++) {
@@ -140,47 +145,94 @@ function App() {
     }, [mangBanDau])
 
     return (
-        <div className='bg-[#085f63] w-full min-h-screen p-10'>
+        <div className='bg-[#574b90] w-full min-h-screen px-10 pb-10'>
             <h1 className='text-4xl font-bold text-center py-5'>Tìm đường đi trong mê cung bằng thuật toán DFS</h1>
-            <form onSubmit={onSubmit} className='flex items-end gap-10 justify-center'>
-                <label>
-                    <p className='text-2xl mb-3 font-bold'>Nhập số dòng &lt;= 20: </p>
-                    <input
-                        type='text'
-                        className='outline-none py-1 px-2 min-w-[300px] h-10'
-                        onChange={(e) => setSoDong(e.target.value)}
-                        value={soDong}
-                    />
-                </label>
-                <label>
-                    <p className='text-2xl mb-3 font-bold'>Nhập số cột &lt;= 20: </p>
-                    <input
-                        type='text'
-                        className='outline-none py-1 px-2 min-w-[300px] h-10'
-                        onChange={(e) => setSoCot(e.target.value)}
-                        value={soCot}
-                    />
-                </label>
-                <button
-                    type='submit'
-                    className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
-                >
-                    Tạo mảng
-                </button>
-                <button
-                    className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
-                    onClick={Reset}
-                >
-                    Reset
-                </button>
-                <button
-                    className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
-                    onClick={DFS}
-                >
-                    DFS
-                </button>
+            <form onSubmit={onSubmit} className='grid grid-cols-3 max-w-[90%] gap-5'>
+                <div>
+                    <label>
+                        <p className='text-2xl mb-3 font-bold'>Nhập số dòng &lt;= 20: </p>
+                        <input
+                            type='text'
+                            className='outline-none py-1 px-2 min-w-[400px] h-10 rounded'
+                            onChange={(e) => setSoDong(e.target.value)}
+                            value={soDong}
+                        />
+                    </label>
+                    <label>
+                        <p className='text-2xl mb-3 font-bold mt-5'>Nhập số cột &lt;= 20: </p>
+                        <input
+                            type='text'
+                            className='outline-none py-1 px-2 min-w-[400px] h-10 rounded'
+                            onChange={(e) => setSoCot(e.target.value)}
+                            value={soCot}
+                        />
+                    </label>
+                    <div className='mt-10 flex gap-10'>
+                        <button
+                            type='submit'
+                            className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
+                        >
+                            Tạo mảng
+                        </button>
+                        <button
+                            type='button'
+                            className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
+                            onClick={Reset}
+                        >
+                            Reset
+                        </button>
+                        <button
+                            type='button'
+                            className='border border-solid max-h-10 p-2 bg-slate-200 hover:bg-slate-600 rounded-s-sm font-semibold'
+                            onClick={DFS}
+                        >
+                            DFS
+                        </button>
+                    </div>
+                </div>
+                <div className='flex flex-col border border-solid p-5 rounded relative text-slate-200'>
+                    <div className='absolute inset-0 blur-sm bg-[#581b98] z-0'></div>
+                    <h3 className='text-2xl font-bold underline z-10'>Luật chơi:</h3>
+                    <p className='z-10 pt-3'>
+                        - Tại mỗi 1 ô ta chỉ có 4 lựa chọn tối đa đó ra đi lên trên, sang trái, sang phải hoặc xuống
+                        dưới 1 ô
+                    </p>
+                    <p className='z-10 pt-3'>- 1 ô ta có thể đi lại nhiều lần</p>
+                    <p className='z-10 pt-3'> - Hãy tìm ra ô thoát hiểm</p>
+                    <p className='z-10 pt-6 text-slate-400'>
+                        (Thuật toán DFS trên sẽ ưu tiên sẽ đi lên Ô trên trước rồi mới trái, phải và cuối cùng là dưới
+                        nếu ô đó đi được)
+                    </p>
+                </div>
+                <div className='grid grid-cols-1 gap-5 border border-solid p-5 rounded relative text-slate-200'>
+                    <div className='absolute inset-0 blur-sm bg-[#581b98] z-0'></div>
+                    <h3 className='text-2xl font-bold underline z-10'>Chú thích: </h3>
+                    <div className='grid grid-cols-2 gap-5'>
+                        <div className='flex items-center z-10'>
+                            <Cell column={0} row={0} value={0} />
+                            <p className='text-xl font-bold ml-5 text-slate-900'>Ô không đi được</p>
+                        </div>
+                        <div className='flex items-center z-10'>
+                            <Cell column={0} row={0} value={1} />
+                            <p className='text-xl font-bold ml-5'>Ô đi được</p>
+                        </div>
+                        <div className='flex items-center z-10'>
+                            <Cell column={0} row={0} value={2} />
+                            <p className='text-xl font-bold ml-5 text-yellow-400'>Ô đã được đi</p>
+                        </div>
+                        <div className='flex items-center z-10'>
+                            <Cell column={0} row={0} value={3} />
+                            <p className='text-xl font-bold ml-5 text-red-500'>Ô bắt đầu</p>
+                        </div>
+                        <div className='flex items-center z-10'>
+                            <Cell column={0} row={0} value={4} />
+                            <p className='text-xl font-bold ml-5 text-green-500'>Ô kết thúc</p>
+                        </div>
+                    </div>
+                </div>
             </form>
-            <div className='flex items-center flex-wrap gap-5 justify-center'>
+
+            <div className='flex items-center justify-evenly flex-wrap gap-5 mt-10'>
                 {soCotMatrix !== 0 && soDongMatrix !== 0 && (
                     <Matrix
                         rows={soDongMatrix}
@@ -218,16 +270,18 @@ function App() {
                     />
                 )}
             </div>
-            <div className='max-w-2xl mx-auto text-2xl'>
+            <div className='max-w-2xl text-2xl mt-5'>
                 {check && (
-                    <div className='grid grid-cols-4'>
-                        Đường đi: <br />
-                        {mangDuongDi.map((item, index) => (
-                            <span key={index}>
-                                Ô:({item.x + 1}, {item.y + 1}){index !== mangDuongDi.length - 1 && ' --> '}
-                            </span>
-                        ))}
-                    </div>
+                    <p>
+                        <p>Đường đi: </p> <br />
+                        <div className='grid grid-cols-5 gap-y-2'>
+                            {mangDuongDi.map((item, index) => (
+                                <span key={index}>
+                                    Ô:({item.x + 1}, {item.y + 1}){index !== mangDuongDi.length - 1 && ' ->'}
+                                </span>
+                            ))}
+                        </div>
+                    </p>
                 )}
             </div>
         </div>

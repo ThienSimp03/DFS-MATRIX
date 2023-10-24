@@ -4,7 +4,7 @@ type Props = {
     row: number
     column: number
     value: number
-    setMangBanDau: React.Dispatch<React.SetStateAction<number[][]>>
+    setMangBanDau?: React.Dispatch<React.SetStateAction<number[][]>>
 }
 
 const Cell = ({ row, column, value, setMangBanDau }: Props) => {
@@ -22,11 +22,13 @@ const Cell = ({ row, column, value, setMangBanDau }: Props) => {
                     : 'bg-yellow-400'
             }`}
             onClick={() => {
-                setMangBanDau((prev) => {
-                    const newArr = [...prev]
-                    newArr[row][column] = 0
-                    return newArr
-                })
+                if (setMangBanDau) {
+                    setMangBanDau((prev) => {
+                        const newArr = [...prev]
+                        newArr[row][column] = 0
+                        return newArr
+                    })
+                }
             }}
         ></div>
     )

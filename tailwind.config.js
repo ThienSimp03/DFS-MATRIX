@@ -28,6 +28,9 @@ module.exports = {
                 18: 'repeat(18, minmax(0, 1fr))',
                 19: 'repeat(19, minmax(0, 1fr))',
                 20: 'repeat(20, minmax(0, 1fr))'
+            },
+            backgroundImage: {
+                anh1: "url('/src/image/anh2.png')"
             }
         }
     },
