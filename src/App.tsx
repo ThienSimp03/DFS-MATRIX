@@ -110,6 +110,8 @@ function App() {
         if (!checkTmp && tmp1[x][y] !== 3) {
             tmp2[x][y] = 1
             tmp3.pop()
+            await sleep(800)
+
             setMangThucThi((prev) => {
                 let tmp = JSON.parse(JSON.stringify(prev))
                 tmp[x][y] = 1
